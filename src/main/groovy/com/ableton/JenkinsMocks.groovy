@@ -69,7 +69,7 @@ class JenkinsMocks {
 
     MockScriptOutput output = mockScriptOutputs[script]
     if (!output) {
-      throw new IllegalArgumentException("No mock output configured for script call " +
+      throw new IllegalArgumentException('No mock output configured for script call ' +
         "'${script}', did you forget to call JenkinsMocks.addShMock()?")
     }
     if (!returnStdout) {
@@ -78,10 +78,11 @@ class JenkinsMocks {
 
     if (returnStdout) {
       return output.stdout
-    } else if (returnStatus) {
-      return output.exitValue
-    } else {
-      return output.exitValue == 0
     }
+    if (returnStatus) {
+      return output.exitValue
+    }
+
+    return output.exitValue == 0
   }
 }
