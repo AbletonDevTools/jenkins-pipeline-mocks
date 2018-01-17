@@ -13,12 +13,6 @@ import org.junit.Test
  * Tests for the JenkinsMocks class.
  */
 class JenkinsMocksTest extends BasePipelineTest {
-  @Override
-  @Before
-  void setUp() {
-    super.setUp()
-  }
-
   @Test
   void echo() throws Exception {
     // Just a sanity check test to make sure nothing throws
