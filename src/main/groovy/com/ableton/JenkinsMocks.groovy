@@ -80,8 +80,8 @@ class JenkinsMocks {
       return output.stdout
     } else if (returnStatus) {
       return output.exitValue
-    } else {
-      return output.exitValue == 0
     }
+
+    return output.exitValue == 0
   }
 }
