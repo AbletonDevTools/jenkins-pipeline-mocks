@@ -78,7 +78,8 @@ class JenkinsMocks {
 
     if (returnStdout) {
       return output.stdout
-    } else if (returnStatus) {
+    }
+    if (returnStatus) {
       return output.exitValue
     }
 
