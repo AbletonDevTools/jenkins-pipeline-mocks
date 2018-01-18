@@ -10,6 +10,11 @@ class JenkinsMocks {
     println message
   }
 
+  @SuppressWarnings('ThrowException')
+  static Closure error = { String message ->
+    throw new Exception(message)
+  }
+
   static Closure isUnix = {
     return !System.properties['os.name'].toLowerCase().contains('windows')
   }
