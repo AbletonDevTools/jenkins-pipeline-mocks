@@ -23,6 +23,22 @@ class JenkinsMocks {
     return System.properties[args?.tmp ? 'java.io.tmpdir' : 'user.dir']
   }
 
+  static Closure retry = { count, body ->
+    Exception lastError = null
+    while (count-- > 0) {
+      try {
+        body()
+        lastError = null
+      } catch (error) {
+        lastError = error
+      }
+    }
+
+    if (lastError) {
+      throw lastError
+    }
+  }
+
   /**
    * Simple container for holding mock script output.
    * @see JenkinsMocks#addShMock

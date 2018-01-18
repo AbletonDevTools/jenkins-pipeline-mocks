@@ -53,6 +53,50 @@ class JenkinsMocksTest extends BasePipelineTest {
   }
 
   @Test
+  void retry() throws Exception {
+    def bodyExecuted = false
+    JenkinsMocks.retry(2) {
+      bodyExecuted = true
+    }
+    assertTrue(bodyExecuted)
+  }
+
+  @Test
+  @SuppressWarnings('ThrowException')
+  void retryFailOnce() throws Exception {
+    def count = 2
+    def exceptionThrown = false
+    def bodyExecuted = false
+    JenkinsMocks.retry(2) {
+      if (count-- == 2) {
+        exceptionThrown = true
+        throw new Exception()
+      }
+      bodyExecuted = true
+    }
+    assertTrue(exceptionThrown)
+    assertTrue(bodyExecuted)
+  }
+
+  @Test
+  @SuppressWarnings('ThrowException')
+  void retryFail() throws Exception {
+    def failed = false
+    def count = 2
+    try {
+      JenkinsMocks.retry(2) {
+        count--
+        throw new Exception('test')
+      }
+    } catch (error) {
+      assertEquals('test', error.message)
+      failed = true
+    }
+    assertEquals(0, count)
+    assertTrue(failed)
+  }
+
+  @Test
   void sh() throws Exception {
     JenkinsMocks.addShMock('pwd', '/foo/bar', 0)
     assertTrue(JenkinsMocks.sh('pwd'))
