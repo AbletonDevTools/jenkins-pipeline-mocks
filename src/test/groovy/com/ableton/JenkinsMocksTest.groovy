@@ -20,6 +20,16 @@ class JenkinsMocksTest extends BasePipelineTest {
   }
 
   @Test
+  void error() throws Exception {
+    try {
+      JenkinsMocks.error('test')
+      fail('Expected exception, but none was thrown')
+    } catch (error) {
+      assertEquals('test', error.message)
+    }
+  }
+
+  @Test
   void isUnix() throws Exception {
     // It would be pretty redundant to basically re-implement this method in its own test
     // case, so instead we just call the function and see that it didn't go haywire.
