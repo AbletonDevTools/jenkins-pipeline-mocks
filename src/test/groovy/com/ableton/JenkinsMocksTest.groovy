@@ -106,8 +106,15 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithScriptFailure() throws Exception {
-    JenkinsMocks.addShMock('evil', '/foo/bar', 666)
-    assertFalse(JenkinsMocks.sh('evil'))
+    def exceptionThrown = false
+    try {
+      JenkinsMocks.addShMock('evil', '/foo/bar', 666)
+      JenkinsMocks.sh('evil')
+    } catch (error) {
+      exceptionThrown = true
+      assertNotNull(error)
+    }
+    assertTrue(exceptionThrown)
   }
 
   @Test

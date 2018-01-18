@@ -103,6 +103,9 @@ class JenkinsMocks {
     if (returnStatus) {
       return output.exitValue
     }
+    if (output.exitValue != 0) {
+      throw new Exception('Script returned error code: ' + output.exitValue)
+    }
 
     return output.exitValue == 0
   }
