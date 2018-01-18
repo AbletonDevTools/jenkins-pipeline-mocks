@@ -21,12 +21,14 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void error() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.error('test')
-      fail('Expected exception, but none was thrown')
     } catch (error) {
+      exceptionThrown = true
       assertEquals('test', error.message)
     }
+    assertTrue(exceptionThrown)
   }
 
   @Test
@@ -128,21 +130,25 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithoutMockScript() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.sh('invalid')
-      fail('Expected exception, but none was thrown')
     } catch (IllegalArgumentException error) {
+      exceptionThrown = true
       assertNotNull(error)
     }
+    assertTrue(exceptionThrown)
   }
 
   @Test
   void shWithBothStatusAndStdout() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
-      fail('Expected exception, but none was thrown')
     } catch (IllegalArgumentException error) {
+      exceptionThrown = true
       assertNotNull(error)
     }
+    assertTrue(exceptionThrown)
   }
 }
