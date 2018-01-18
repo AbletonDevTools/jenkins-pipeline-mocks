@@ -3,6 +3,7 @@ package com.ableton
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
@@ -21,12 +22,14 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void error() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.error('test')
-      fail('Expected exception, but none was thrown')
     } catch (error) {
+      exceptionThrown = true
       assertEquals('test', error.message)
     }
+    assertTrue(exceptionThrown)
   }
 
   @Test
@@ -99,13 +102,20 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   void sh() throws Exception {
     JenkinsMocks.addShMock('pwd', '/foo/bar', 0)
-    assertTrue(JenkinsMocks.sh('pwd'))
+    assertNull(JenkinsMocks.sh('pwd'))
   }
 
   @Test
   void shWithScriptFailure() throws Exception {
-    JenkinsMocks.addShMock('evil', '/foo/bar', 666)
-    assertFalse(JenkinsMocks.sh('evil'))
+    def exceptionThrown = false
+    try {
+      JenkinsMocks.addShMock('evil', '/foo/bar', 666)
+      JenkinsMocks.sh('evil')
+    } catch (error) {
+      exceptionThrown = true
+      assertNotNull(error)
+    }
+    assertTrue(exceptionThrown)
   }
 
   @Test
@@ -128,21 +138,25 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithoutMockScript() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.sh('invalid')
-      fail('Expected exception, but none was thrown')
     } catch (IllegalArgumentException error) {
+      exceptionThrown = true
       assertNotNull(error)
     }
+    assertTrue(exceptionThrown)
   }
 
   @Test
   void shWithBothStatusAndStdout() throws Exception {
+    def exceptionThrown = false
     try {
       JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
-      fail('Expected exception, but none was thrown')
     } catch (IllegalArgumentException error) {
+      exceptionThrown = true
       assertNotNull(error)
     }
+    assertTrue(exceptionThrown)
   }
 }
