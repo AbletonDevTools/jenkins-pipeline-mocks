@@ -3,6 +3,7 @@ package com.ableton
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
@@ -101,7 +102,7 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   void sh() throws Exception {
     JenkinsMocks.addShMock('pwd', '/foo/bar', 0)
-    assertTrue(JenkinsMocks.sh('pwd'))
+    assertNull(JenkinsMocks.sh('pwd'))
   }
 
   @Test
