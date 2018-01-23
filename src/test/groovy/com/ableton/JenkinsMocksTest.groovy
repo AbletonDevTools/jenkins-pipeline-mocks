@@ -61,10 +61,7 @@ class JenkinsMocksTest extends BasePipelineTest {
     JenkinsMocks.retry(2) {
       bodyExecutedCount++
     }
-    // The current implementation of retry() has a bug where the body is executed multiple
-    // times even if successful. The correct assertion should be:
-    // assertEquals(1, bodyExecutedCount)
-    assertEquals(2, bodyExecutedCount)
+    assertEquals(1, bodyExecutedCount)
   }
 
   @Test
