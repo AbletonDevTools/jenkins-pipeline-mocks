@@ -29,6 +29,7 @@ class JenkinsMocks {
       try {
         body()
         lastError = null
+        break
       } catch (error) {
         lastError = error
       }

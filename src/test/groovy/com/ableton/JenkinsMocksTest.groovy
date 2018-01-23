@@ -57,11 +57,11 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void retry() throws Exception {
-    def bodyExecuted = false
+    def bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
-      bodyExecuted = true
+      bodyExecutedCount++
     }
-    assertTrue(bodyExecuted)
+    assertEquals(1, bodyExecutedCount)
   }
 
   @Test
@@ -69,25 +69,27 @@ class JenkinsMocksTest extends BasePipelineTest {
   void retryFailOnce() throws Exception {
     def count = 2
     def exceptionThrown = false
-    def bodyExecuted = false
+    def bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
+      bodyExecutedCount++
       if (count-- == 2) {
         exceptionThrown = true
         throw new Exception()
       }
-      bodyExecuted = true
     }
     assertTrue(exceptionThrown)
-    assertTrue(bodyExecuted)
+    assertEquals(2, bodyExecutedCount)
   }
 
   @Test
   @SuppressWarnings('ThrowException')
   void retryFail() throws Exception {
+    def bodyExecutedCount = 0
     def failed = false
     def count = 2
     try {
       JenkinsMocks.retry(2) {
+        bodyExecutedCount++
         count--
         throw new Exception('test')
       }
@@ -95,6 +97,7 @@ class JenkinsMocksTest extends BasePipelineTest {
       assertEquals('test', error.message)
       failed = true
     }
+    assertEquals(2, bodyExecutedCount)
     assertEquals(0, count)
     assertTrue(failed)
   }
