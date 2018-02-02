@@ -42,7 +42,7 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   void pwd() throws Exception {
     String result = JenkinsMocks.pwd()
-    assertNotNull(result)
+    assertEquals(System.properties['user.dir'], result)
     File f = new File(result)
     assertTrue(f.exists())
   }
@@ -50,7 +50,7 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   void pwdTmp() throws Exception {
     String result = JenkinsMocks.pwd(tmp: true)
-    assertNotNull(result)
+    assertEquals(System.properties['java.io.tmpdir'], result)
     File f = new File(result)
     assertTrue(f.exists())
   }
