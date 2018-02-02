@@ -107,17 +107,10 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertNull(JenkinsMocks.sh('pwd'))
   }
 
-  @Test
+  @Test(expected = Exception)
   void shWithScriptFailure() throws Exception {
-    boolean exceptionThrown = false
-    try {
-      JenkinsMocks.addShMock('evil', '/foo/bar', 666)
-      JenkinsMocks.sh('evil')
-    } catch (error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.addShMock('evil', '/foo/bar', 666)
+    JenkinsMocks.sh('evil')
   }
 
   @Test
@@ -138,27 +131,13 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertEquals(666, JenkinsMocks.sh(returnStatus: true, script: 'evil'))
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException)
   void shWithoutMockScript() throws Exception {
-    boolean exceptionThrown = false
-    try {
-      JenkinsMocks.sh('invalid')
-    } catch (IllegalArgumentException error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.sh('invalid')
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException)
   void shWithBothStatusAndStdout() throws Exception {
-    boolean exceptionThrown = false
-    try {
-      JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
-    } catch (IllegalArgumentException error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
   }
 }
