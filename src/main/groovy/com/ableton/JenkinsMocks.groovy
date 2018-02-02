@@ -74,10 +74,11 @@ class JenkinsMocks {
     mockScriptOutputs[script] = new MockScriptOutput(null, stdout, exitValue)
   }
 
+  @SuppressWarnings('ThrowException')
   static Closure sh = { args ->
     String script = null
-    def returnStdout = false
-    def returnStatus = false
+    boolean returnStdout = false
+    boolean returnStatus = false
 
     // The `sh` function can be called with either a string, or a map of key/value pairs.
     if (args instanceof String || args instanceof GString) {

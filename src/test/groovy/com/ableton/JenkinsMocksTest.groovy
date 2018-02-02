@@ -1,7 +1,6 @@
 package com.ableton
 
 import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
@@ -22,7 +21,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void error() throws Exception {
-    def exceptionThrown = false
+    boolean exceptionThrown = false
     try {
       JenkinsMocks.error('test')
     } catch (error) {
@@ -57,7 +56,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void retry() throws Exception {
-    def bodyExecutedCount = 0
+    int bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
       bodyExecutedCount++
     }
@@ -67,9 +66,9 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   @SuppressWarnings('ThrowException')
   void retryFailOnce() throws Exception {
-    def count = 2
-    def exceptionThrown = false
-    def bodyExecutedCount = 0
+    int count = 2
+    boolean exceptionThrown = false
+    int bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
       bodyExecutedCount++
       if (count-- == 2) {
@@ -84,9 +83,9 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   @SuppressWarnings('ThrowException')
   void retryFail() throws Exception {
-    def bodyExecutedCount = 0
-    def failed = false
-    def count = 2
+    int bodyExecutedCount = 0
+    boolean failed = false
+    int count = 2
     try {
       JenkinsMocks.retry(2) {
         bodyExecutedCount++
@@ -110,7 +109,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithScriptFailure() throws Exception {
-    def exceptionThrown = false
+    boolean exceptionThrown = false
     try {
       JenkinsMocks.addShMock('evil', '/foo/bar', 666)
       JenkinsMocks.sh('evil')
@@ -141,7 +140,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithoutMockScript() throws Exception {
-    def exceptionThrown = false
+    boolean exceptionThrown = false
     try {
       JenkinsMocks.sh('invalid')
     } catch (IllegalArgumentException error) {
@@ -153,7 +152,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void shWithBothStatusAndStdout() throws Exception {
-    def exceptionThrown = false
+    boolean exceptionThrown = false
     try {
       JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
     } catch (IllegalArgumentException error) {

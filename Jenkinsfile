@@ -1,4 +1,5 @@
-@Library(['ableton-utils@0.3.0', 'groovylint@0.1.1']) _
+@SuppressWarnings('VariableTypeRequired') // For the declaration of the _ variable
+@Library(['ableton-utils@0.3.0', 'groovylint@0.3.0']) _
 
 
 runTheBuilds.runDevToolsProject(script: this,
