@@ -6,6 +6,10 @@ package com.ableton
  * with the JenkinsPipelineUnit library.
  */
 class JenkinsMocks {
+  static Closure dir = { String path, Closure body ->
+    body()
+  }
+
   static Closure echo = { String message ->
     println message
   }
