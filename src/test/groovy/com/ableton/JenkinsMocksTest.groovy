@@ -19,6 +19,8 @@ class JenkinsMocksTest extends BasePipelineTest {
     JenkinsMocks.echo('test')
   }
 
+  // We don't use the @Test(expected) annotation here because we want to verify the
+  // contents of the exception message.
   @Test
   void error() throws Exception {
     boolean exceptionThrown = false
@@ -63,6 +65,8 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertEquals(1, bodyExecutedCount)
   }
 
+  // We don't use the @Test(expected) annotation here because we want to verify the number
+  // of times the closure body executed.
   @Test
   @SuppressWarnings('ThrowException')
   void retryFailOnce() throws Exception {
