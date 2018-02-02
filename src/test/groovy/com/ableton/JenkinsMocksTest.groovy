@@ -1,7 +1,6 @@
 package com.ableton
 
 import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
@@ -20,9 +19,11 @@ class JenkinsMocksTest extends BasePipelineTest {
     JenkinsMocks.echo('test')
   }
 
+  // We don't use the @Test(expected) annotation here because we want to verify the
+  // contents of the exception message.
   @Test
   void error() throws Exception {
-    def exceptionThrown = false
+    boolean exceptionThrown = false
     try {
       JenkinsMocks.error('test')
     } catch (error) {
@@ -57,19 +58,21 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void retry() throws Exception {
-    def bodyExecutedCount = 0
+    int bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
       bodyExecutedCount++
     }
     assertEquals(1, bodyExecutedCount)
   }
 
+  // We don't use the @Test(expected) annotation here because we want to verify the number
+  // of times the closure body executed.
   @Test
   @SuppressWarnings('ThrowException')
   void retryFailOnce() throws Exception {
-    def count = 2
-    def exceptionThrown = false
-    def bodyExecutedCount = 0
+    int count = 2
+    boolean exceptionThrown = false
+    int bodyExecutedCount = 0
     JenkinsMocks.retry(2) {
       bodyExecutedCount++
       if (count-- == 2) {
@@ -84,9 +87,9 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test
   @SuppressWarnings('ThrowException')
   void retryFail() throws Exception {
-    def bodyExecutedCount = 0
-    def failed = false
-    def count = 2
+    int bodyExecutedCount = 0
+    boolean failed = false
+    int count = 2
     try {
       JenkinsMocks.retry(2) {
         bodyExecutedCount++
@@ -108,17 +111,10 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertNull(JenkinsMocks.sh('pwd'))
   }
 
-  @Test
+  @Test(expected = Exception)
   void shWithScriptFailure() throws Exception {
-    def exceptionThrown = false
-    try {
-      JenkinsMocks.addShMock('evil', '/foo/bar', 666)
-      JenkinsMocks.sh('evil')
-    } catch (error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.addShMock('evil', '/foo/bar', 666)
+    JenkinsMocks.sh('evil')
   }
 
   @Test
@@ -139,27 +135,13 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertEquals(666, JenkinsMocks.sh(returnStatus: true, script: 'evil'))
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException)
   void shWithoutMockScript() throws Exception {
-    def exceptionThrown = false
-    try {
-      JenkinsMocks.sh('invalid')
-    } catch (IllegalArgumentException error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.sh('invalid')
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException)
   void shWithBothStatusAndStdout() throws Exception {
-    def exceptionThrown = false
-    try {
-      JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
-    } catch (IllegalArgumentException error) {
-      exceptionThrown = true
-      assertNotNull(error)
-    }
-    assertTrue(exceptionThrown)
+    JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
   }
 }

@@ -13,6 +13,7 @@ import org.junit.Test
  * which exercises all of the methods of the docker singleton.
  */
 class DockerMockTest extends BasePipelineTest {
+  @SuppressWarnings('FieldTypeRequired')
   def script
 
   @Before
