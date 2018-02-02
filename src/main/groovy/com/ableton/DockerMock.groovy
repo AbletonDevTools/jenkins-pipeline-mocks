@@ -1,9 +1,7 @@
 package com.ableton
 
 
-@SuppressWarnings('EmptyMethod')
-@SuppressWarnings('MethodReturnTypeRequired')
-@SuppressWarnings('UnusedMethodParameter')
+@SuppressWarnings(['EmptyMethod', 'MethodReturnTypeRequired', 'UnusedMethodParameter'])
 class DockerMock {
   static class Container {
     String id
