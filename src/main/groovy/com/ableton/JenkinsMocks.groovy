@@ -1,5 +1,7 @@
 package com.ableton
 
+import java.lang.reflect.Method
+
 
 /**
  * Provides functional mocks for some Jenkins functions, which is useful in combination
@@ -11,10 +13,34 @@ class JenkinsMocks {
    * following functions, you should call this function in your tearDown method:
    * <ul>
    *   <li>{@link JenkinsMocks#addShMock}</li>
+   *   <li>{@link JenkinsMocks#setCatchErrorParent}</li>
    * </ul>
    */
   static void clearStaticData() {
     mockScriptOutputs.clear()
+    catchErrorParent = null
+    catchErrorUpdateBuildStatus = null
+  }
+
+  static Object catchErrorParent = null
+  static Method catchErrorUpdateBuildStatus = null
+
+  static void setCatchErrorParent(Object parent) {
+    catchErrorUpdateBuildStatus = parent.getClass().getMethod('updateBuildStatus', String)
+    catchErrorParent = parent
+  }
+
+  static Closure catchError = { Closure body ->
+    try {
+      body()
+    } catch (ignored) {
+      if (catchErrorParent && catchErrorUpdateBuildStatus) {
+        catchErrorUpdateBuildStatus.invoke(catchErrorParent, 'FAILURE')
+      } else {
+        throw new IllegalArgumentException('No parent object has been registered for ' +
+          'catchError, did you forget to call setCatchErrorParent()?')
+      }
+    }
   }
 
   static Closure archive = { /* noop */ }
