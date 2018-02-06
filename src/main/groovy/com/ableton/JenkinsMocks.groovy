@@ -6,6 +6,17 @@ package com.ableton
  * with the JenkinsPipelineUnit library.
  */
 class JenkinsMocks {
+  /**
+   * Clears static data used by some closures in this class. If you use any of the
+   * following functions, you should call this function in your tearDown method:
+   * <ul>
+   *   <li>{@link JenkinsMocks#addShMock}</li>
+   * </ul>
+   */
+  static void clearStaticData() {
+    mockScriptOutputs.clear()
+  }
+
   static Closure dir = { String path, Closure body ->
     body()
   }

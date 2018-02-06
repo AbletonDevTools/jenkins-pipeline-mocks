@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import org.junit.After
 import org.junit.Test
 
 
@@ -12,6 +13,21 @@ import org.junit.Test
  * Tests for the JenkinsMocks class.
  */
 class JenkinsMocksTest extends BasePipelineTest {
+  @After
+  void tearDown() throws Exception {
+    JenkinsMocks.clearStaticData()
+  }
+
+  @Test
+  void clearStaticData() throws Exception {
+    JenkinsMocks.addShMock('test', '', 0)
+    assertEquals(1, JenkinsMocks.mockScriptOutputs.size())
+
+    JenkinsMocks.clearStaticData()
+
+    assertEquals(0, JenkinsMocks.mockScriptOutputs.size())
+  }
+
   @Test
   void echo() throws Exception {
     // Just a sanity check test to make sure nothing throws
