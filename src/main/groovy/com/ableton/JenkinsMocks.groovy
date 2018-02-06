@@ -17,6 +17,10 @@ class JenkinsMocks {
     mockScriptOutputs.clear()
   }
 
+  static Closure archive = { /* noop */ }
+
+  static Closure deleteDir = { /* noop */ }
+
   static Closure dir = { String path, Closure body ->
     body()
   }
@@ -33,6 +37,8 @@ class JenkinsMocks {
   static Closure isUnix = {
     return !System.properties['os.name'].toLowerCase().contains('windows')
   }
+
+  static Closure mail = { /* noop */ }
 
   static Closure pwd = { args = [:] ->
     return System.properties[args?.tmp ? 'java.io.tmpdir' : 'user.dir']
@@ -124,4 +130,12 @@ class JenkinsMocks {
       throw new Exception('Script returned error code: ' + output.exitValue)
     }
   }
+
+  static Closure sleep = { /* noop */ }
+
+  static Closure stash = { /* noop */ }
+
+  static Closure unstash = { /* noop */ }
+
+  static Closure writeFile = { /* noop */ }
 }
