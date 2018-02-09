@@ -1,11 +1,13 @@
 package com.ableton
 
 import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 
@@ -13,6 +15,16 @@ import org.junit.Test
  * Tests for the JenkinsMocks class.
  */
 class JenkinsMocksTest extends BasePipelineTest {
+  // The setUp() method in the super class is not annotated with @Before since
+  // JenkinsPipelineUnit does not directly depend on the JUnit framework. As such, we need
+  // this otherwise empty override in order to configure variable bindings.
+  @SuppressWarnings('UnnecessaryOverridingMethod')
+  @Override
+  @Before
+  void setUp() throws Exception {
+    super.setUp()
+  }
+
   @After
   void tearDown() throws Exception {
     JenkinsMocks.clearStaticData()
@@ -22,10 +34,39 @@ class JenkinsMocksTest extends BasePipelineTest {
   void clearStaticData() throws Exception {
     JenkinsMocks.addShMock('test', '', 0)
     assertEquals(1, JenkinsMocks.mockScriptOutputs.size())
+    JenkinsMocks.setCatchErrorParent(this)
+    assertNotNull(JenkinsMocks.catchErrorParent)
+    assertNotNull(JenkinsMocks.catchErrorUpdateBuildStatus)
 
     JenkinsMocks.clearStaticData()
 
     assertEquals(0, JenkinsMocks.mockScriptOutputs.size())
+    assertNull(JenkinsMocks.catchErrorParent)
+    assertNull(JenkinsMocks.catchErrorUpdateBuildStatus)
+  }
+
+  @SuppressWarnings(['ThrowException', 'UnnecessarySetter'])
+  @Test
+  void catchError() throws Exception {
+    JenkinsMocks.setCatchErrorParent(this)
+    JenkinsMocks.catchError {
+      throw new Exception('test')
+    }
+    assertEquals('FAILURE', binding.getVariable('currentBuild').result)
+  }
+
+  @SuppressWarnings('ThrowException')
+  @Test(expected = IllegalArgumentException)
+  void catchErrorWithoutParent() throws Exception {
+    JenkinsMocks.catchError {
+      throw new Exception('test')
+    }
+  }
+
+  @SuppressWarnings(['ThrowException', 'UnnecessarySetter'])
+  @Test(expected = NoSuchMethodException)
+  void catchErrorWithWrongParentClass() throws Exception {
+    JenkinsMocks.setCatchErrorParent(new Object())
   }
 
   @Test
