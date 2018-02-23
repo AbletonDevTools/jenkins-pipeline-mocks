@@ -17,6 +17,7 @@ class JenkinsMocks {
    * </ul>
    */
   static void clearStaticData() {
+    mockReadFileOutputs.clear()
     mockScriptOutputs.clear()
     catchErrorParent = null
     catchErrorUpdateBuildStatus = null
@@ -68,6 +69,28 @@ class JenkinsMocks {
 
   static Closure pwd = { args = [:] ->
     return System.properties[args?.tmp ? 'java.io.tmpdir' : 'user.dir']
+  }
+
+  static Map<String, String> mockReadFileOutputs = [:]
+
+  static void addReadFileMock(String file, String contents) {
+    mockReadFileOutputs[file] = contents
+  }
+
+  static Closure readFile = { args ->
+    String file = null
+    if (args instanceof String || args instanceof GString) {
+      file = args
+    } else if (args instanceof Map) {
+      file = args['file']
+    }
+    assert file
+
+    if (!mockReadFileOutputs.containsKey(file)) {
+      throw new IllegalArgumentException("No mock output configured for '${file}', " +
+        'did you forget to call JenkinsMocks.addReadFileMock()?')
+    }
+    return mockReadFileOutputs[file]
   }
 
   static Closure retry = { count, body ->

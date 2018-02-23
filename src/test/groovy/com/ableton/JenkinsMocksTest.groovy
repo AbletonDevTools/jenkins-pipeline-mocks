@@ -32,6 +32,8 @@ class JenkinsMocksTest extends BasePipelineTest {
 
   @Test
   void clearStaticData() throws Exception {
+    JenkinsMocks.addReadFileMock('test', 'contents')
+    assertEquals(1, JenkinsMocks.mockReadFileOutputs.size())
     JenkinsMocks.addShMock('test', '', 0)
     assertEquals(1, JenkinsMocks.mockScriptOutputs.size())
     JenkinsMocks.setCatchErrorParent(this)
@@ -40,6 +42,7 @@ class JenkinsMocksTest extends BasePipelineTest {
 
     JenkinsMocks.clearStaticData()
 
+    assertEquals(0, JenkinsMocks.mockReadFileOutputs.size())
     assertEquals(0, JenkinsMocks.mockScriptOutputs.size())
     assertNull(JenkinsMocks.catchErrorParent)
     assertNull(JenkinsMocks.catchErrorUpdateBuildStatus)
@@ -110,6 +113,23 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertEquals(System.properties['java.io.tmpdir'], result)
     File f = new File(result)
     assertTrue(f.exists())
+  }
+
+  @Test
+  void readFile() throws Exception {
+    JenkinsMocks.addReadFileMock('test', 'contents')
+    assertEquals('contents', JenkinsMocks.readFile('test'))
+  }
+
+  @Test
+  void readFileWithMap() throws Exception {
+    JenkinsMocks.addReadFileMock('test', 'contents')
+    assertEquals('contents', JenkinsMocks.readFile(file: 'test'))
+  }
+
+  @Test(expected = IllegalArgumentException)
+  void readFileWithNoMock() throws Exception {
+    JenkinsMocks.readFile('test')
   }
 
   @Test
