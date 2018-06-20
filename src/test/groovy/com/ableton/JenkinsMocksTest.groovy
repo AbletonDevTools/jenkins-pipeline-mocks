@@ -213,6 +213,70 @@ class JenkinsMocksTest extends BasePipelineTest {
     assertEquals(666, JenkinsMocks.sh(returnStatus: true, script: 'evil'))
   }
 
+  @Test
+  void shWithCallback() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [stdout: '/foo/bar', exitValue: 0]
+    }
+    assertNull(JenkinsMocks.sh('pwd'))
+  }
+
+  @Test(expected = Exception)
+  void shWithCallbackScriptFailure() throws Exception {
+    JenkinsMocks.addShMock('evil') { script ->
+      return [stdout: '/foo/bar', exitValue: 666]
+    }
+    JenkinsMocks.sh('evil')
+  }
+
+  @Test
+  void shWithCallbackStdout() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [stdout: '/foo/bar', exitValue: 0]
+    }
+    assertEquals('/foo/bar', JenkinsMocks.sh(returnStdout: true, script: 'pwd'))
+  }
+
+  @Test
+  void shWithCallbackReturnCode() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [stdout: '/foo/bar', exitValue: 0]
+    }
+    assertEquals(0, JenkinsMocks.sh(returnStatus: true, script: 'pwd'))
+  }
+
+  @Test
+  void shWithCallbackNonZeroReturnCode() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [stdout: '/foo/bar', exitValue: 666]
+    }
+    assertEquals(666, JenkinsMocks.sh(returnStatus: true, script: 'pwd'))
+  }
+
+  @Test(expected = IllegalArgumentException)
+  void shWithCallbackOutputNotMap() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return 'invalid'
+    }
+    JenkinsMocks.sh(returnStatus: true, script: 'pwd')
+  }
+
+  @Test(expected = IllegalArgumentException)
+  void shWithCallbackNoStdoutKey() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [exitValue: 666]
+    }
+    JenkinsMocks.sh(returnStatus: true, script: 'pwd')
+  }
+
+  @Test(expected = IllegalArgumentException)
+  void shWithCallbackNoExitValueKey() throws Exception {
+    JenkinsMocks.addShMock('pwd') { script ->
+      return [stdout: '/foo/bar']
+    }
+    JenkinsMocks.sh(returnStatus: true, script: 'pwd')
+  }
+
   @Test(expected = IllegalArgumentException)
   void shWithoutMockScript() throws Exception {
     JenkinsMocks.sh('invalid')

@@ -1,6 +1,7 @@
 package com.ableton
 
 import java.lang.reflect.Method
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 
 /**
@@ -115,12 +116,17 @@ class JenkinsMocks {
    * @see JenkinsMocks#addShMock
    */
   class MockScriptOutput {
-    String stdout
-    int exitValue
+    String stdout = null
+    int exitValue = -1
+    Closure callback = null
 
     MockScriptOutput(String stdout, int exitValue) {
       this.stdout = stdout
       this.exitValue = exitValue
+    }
+
+    MockScriptOutput(Closure callback) {
+      this.callback = callback
     }
   }
 
@@ -138,6 +144,24 @@ class JenkinsMocks {
    */
   static void addShMock(String script, String stdout, int exitValue) {
     mockScriptOutputs[script] = new MockScriptOutput(null, stdout, exitValue)
+  }
+
+  /**
+   * Configure mock callback for the `sh` command. This function should be called before
+   * attempting to call `JenkinsMocks.sh()`.
+   * @see JenkinsMocks#sh
+   * @param script Script command to mock.
+   * @param callback Closure to be called when the mock is executed. This closure will be
+   *                 passed the script call which is being executed, and
+   *                 <strong>must</strong> return a {@code Map} with the following
+   *                 key/value pairs:
+   *                 <ul>
+   *                   <li>{@code stdout}: {@code String} with the mocked output.</li>
+   *                   <li>{@code exitValue}: {@code int} with the mocked exit value.</li>
+   *                 </ul>
+   */
+  static void addShMock(String script, Closure callback) {
+    mockScriptOutputs[script] = new MockScriptOutput(null, callback)
   }
 
   @SuppressWarnings('ThrowException')
@@ -165,18 +189,48 @@ class JenkinsMocks {
       throw new IllegalArgumentException('No mock output configured for script call ' +
         "'${script}', did you forget to call JenkinsMocks.addShMock()?")
     }
+
+    String stdout
+    int exitValue
+
+    // If the callback closure is not null, execute it and grab the output.
+    if (output.callback) {
+      Map callbackOutput
+      try {
+        callbackOutput = output.callback(script)
+      } catch (GroovyCastException) {
+        throw new IllegalArgumentException("Mocked sh callback for ${script}" +
+          ' was not a map')
+      }
+      if (!callbackOutput.containsKey('stdout')
+        || !(callbackOutput['stdout'] instanceof String)) {
+        throw new IllegalArgumentException("Mocked sh callback for ${script} did not" +
+          ' contain a valid value for the stdout key')
+      }
+      if (!callbackOutput.containsKey('exitValue')
+        || !(callbackOutput['exitValue'] instanceof Integer)) {
+        throw new IllegalArgumentException("Mocked sh callback for ${script} did not" +
+          ' contain a valid value for the exitValue key')
+      }
+      stdout = callbackOutput['stdout']
+      exitValue = callbackOutput['exitValue']
+    } else {
+      stdout = output.stdout
+      exitValue = output.exitValue
+    }
+
     if (!returnStdout) {
-      println output.stdout
+      println stdout
     }
 
     if (returnStdout) {
-      return output.stdout
+      return stdout
     }
     if (returnStatus) {
-      return output.exitValue
+      return exitValue
     }
-    if (output.exitValue != 0) {
-      throw new Exception('Script returned error code: ' + output.exitValue)
+    if (exitValue != 0) {
+      throw new Exception('Script returned error code: ' + exitValue)
     }
   }
 
