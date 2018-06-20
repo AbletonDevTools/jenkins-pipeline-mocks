@@ -240,5 +240,19 @@ class JenkinsMocks {
 
   static Closure unstash = { /* noop */ }
 
+  /**
+   * Mock for Jenkins waitUntil step. Unlike the implementation on Jenkins, this mock will
+   * abort after 100 failures, nor does it have exponential backoff between failures.
+   */
+  @SuppressWarnings('ThrowException')
+  static void waitUntil(Closure body) {
+    int count = 100
+    while (!body()) {
+      if (count-- <= 0) {
+        throw new Exception('waitUntil: failed 100 times, refusing to continue')
+      }
+    }
+  }
+
   static Closure writeFile = { /* noop */ }
 }

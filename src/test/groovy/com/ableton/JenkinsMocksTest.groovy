@@ -286,4 +286,21 @@ class JenkinsMocksTest extends BasePipelineTest {
   void shWithBothStatusAndStdout() throws Exception {
     JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
   }
+
+  @Test
+  void waitUntilCalledTwice() throws Exception {
+    int count = 0
+    JenkinsMocks.waitUntil {
+      count++
+      return count == 2
+    }
+    assertEquals(2, count)
+  }
+
+  @Test(expected = Exception)
+  void waitUntilExceedDefaultLimit() throws Exception {
+    JenkinsMocks.waitUntil {
+      return false
+    }
+  }
 }
