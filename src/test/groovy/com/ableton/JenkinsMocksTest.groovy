@@ -228,4 +228,34 @@ class JenkinsMocksTest extends BasePipelineTest {
     }
     assertEquals("python script.py, returnStdout:true, returnStatus:false", JenkinsMocks.sh(returnStdout: true, script: 'python script.py'))
   }
+
+  @Test
+  void waitUntilCalledTwice() throws Exception {
+    int count=0
+    JenkinsMocks.waitUntil {
+       count++
+      if(count >= 2)
+        return true
+      return false
+    }
+    assertEquals(2, count)
+  }
+
+  @Test(expected = Exception)
+  void waitUntilExceedDefaultLimit() throws Exception {
+    JenkinsMocks.waitUntil {
+      return false
+    }
+  }
+
+  @Test(expected = Exception)
+  void waitUntilExceedSetLimit() throws Exception {
+    int count=0
+    JenkinsMocks.waitUntil(5) {
+      count++
+      if(count >= 10)
+          return true
+      return false
+    }
+  }
 }

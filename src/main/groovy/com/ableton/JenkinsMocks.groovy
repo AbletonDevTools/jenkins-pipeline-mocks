@@ -209,6 +209,19 @@ class JenkinsMocks {
     }
   }
 
+  static def waitUntil(int maxTimes, Closure body) {
+      int count = 0
+      while(body() == false){
+          count++
+          if(count > maxTimes){
+              throw new Exception("waitUntil: failed due to could not resolve in ${maxTimes} loops")
+          }
+      }
+  }
+  static def waitUntil = { body ->
+      waitUntil(100, body)
+  }
+
   static Closure sleep = { /* noop */ }
 
   static Closure stash = { /* noop */ }
