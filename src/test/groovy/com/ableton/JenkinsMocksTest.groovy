@@ -220,4 +220,12 @@ class JenkinsMocksTest extends BasePipelineTest {
   void shWithBothStatusAndStdout() throws Exception {
     JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
   }
+
+  @Test
+  void shWithCallback() throws Exception {
+    JenkinsMocks.addShMockCallback('python') { script, returnStdout, returnStatus ->
+        return "${script}, returnStdout:${returnStdout}, returnStatus:${returnStatus}".toString()
+    }
+    assertEquals("python script.py, returnStdout:true, returnStatus:false", JenkinsMocks.sh(returnStdout: true, script: 'python script.py'))
+  }
 }

@@ -127,6 +127,9 @@ class JenkinsMocks {
   /** Holds configured mock output values for the `sh` command. */
   static Map<String, MockScriptOutput> mockScriptOutputs = [:]
 
+  /** Holds configured mock callback values for the `sh` command. */
+  static Map<String, Closure> rerouteScriptWithCallbacks = [:]
+
   /**
    * Configure mock output for the `sh` command. This function should be called before
    * attempting to call `JenkinsMocks.sh()`.
@@ -138,6 +141,18 @@ class JenkinsMocks {
    */
   static void addShMock(String script, String stdout, int exitValue) {
     mockScriptOutputs[script] = new MockScriptOutput(null, stdout, exitValue)
+  }
+
+  /**
+   * Configure mock callback for the `sh` command. This function should be called before
+   * attempting to call `JenkinsMocks.sh()`.
+   * @see JenkinsMocks#sh
+   * @param scriptIncludeKeyword Full script command or part of it to mock. Note script match occurs with cmd.contains() so can forward e.g. specific tool commands to single mock callback despite of different parameters.
+   * @param callback Closure to be called when script keyword matches
+   * @return
+   */
+  static void addShMockCallback(String scriptIncludeKeyword, Closure callback) {
+    rerouteScriptWithCallbacks[scriptIncludeKeyword] = callback
   }
 
   @SuppressWarnings('ThrowException')
@@ -159,6 +174,20 @@ class JenkinsMocks {
       }
     }
     assert script
+
+    //Find 1st matching callback if exist
+    def mockCallbacks = rerouteScriptWithCallbacks.findAll { keyword, mockCallback ->
+        script.contains(keyword)
+    }.collect { keyword, mockCallback ->
+        mockCallback
+    }
+    if(mockCallbacks.size() > 1){
+        throw new IllegalArgumentException(
+          "More than 1 addShMockCallback() match with '${script}' - need to refine keyword to match single mock")
+    }
+    if(!mockCallbacks?.isEmpty()) {
+        return mockCallbacks?.first().call(script, returnStdout, returnStatus)
+    }
 
     MockScriptOutput output = mockScriptOutputs[script]
     if (!output) {
