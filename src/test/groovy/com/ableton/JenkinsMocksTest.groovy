@@ -14,6 +14,7 @@ import org.junit.Test
 /**
  * Tests for the JenkinsMocks class.
  */
+@SuppressWarnings('MethodCount')
 class JenkinsMocksTest extends BasePipelineTest {
   // The setUp() method in the super class is not annotated with @Before since
   // JenkinsPipelineUnit does not directly depend on the JUnit framework. As such, we need
