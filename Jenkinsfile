@@ -1,5 +1,5 @@
 @Library([
-  'ableton-utils@0.8',
+  'ableton-utils@0.10',
   'groovylint@0.4',
 ]) _
 
@@ -20,7 +20,7 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: {
-    runTheBuilds.runForSpecificBranches(['master'], false) {
+    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
       String versionNumber = readFile('VERSION').trim()
       version.tag(versionNumber)
       version.forwardMinorBranch(versionNumber)
