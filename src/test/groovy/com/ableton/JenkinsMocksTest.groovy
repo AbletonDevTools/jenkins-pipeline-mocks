@@ -30,6 +30,7 @@ class JenkinsMocksTest extends BasePipelineTest {
     JenkinsMocks.clearStaticData()
   }
 
+  @SuppressWarnings('UnnecessarySetter')
   @Test
   void clearStaticData() throws Exception {
     JenkinsMocks.addReadFileMock('test', 'contents')
