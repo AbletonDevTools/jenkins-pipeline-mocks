@@ -8,7 +8,7 @@ runTheBuilds.runDevToolsProject(
   test: {
     parallel(failFast: false,
       groovylint: {
-        groovylint.check('./Jenkinsfile,./src/**.groovy,*.gradle')
+        groovylint.check('./Jenkinsfile,./*.gradle,**/*.groovy')
       },
       junit: {
         try {
