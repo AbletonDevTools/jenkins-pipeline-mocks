@@ -3,11 +3,11 @@ if (env.HEAD_REF || env.BASE_REF) {
   return
 }
 
-library 'ableton-utils@0.11'
+library 'ableton-utils@0.12'
 library 'groovylint@0.4'
 
 
-runTheBuilds.runDevToolsProject(
+devToolsProject.run(
   test: {
     parallel(failFast: false,
       groovylint: {
@@ -23,7 +23,7 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: {
-    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
+    if (runTheBuilds.isPushTo(['master'])) {
       String versionNumber = readFile('VERSION').trim()
       version.tag(versionNumber)
       version.forwardMinorBranch(versionNumber)
