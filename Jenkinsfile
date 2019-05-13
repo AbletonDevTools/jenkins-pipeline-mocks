@@ -22,11 +22,10 @@ devToolsProject.run(
       },
     )
   },
+  deployWhen: { return runTheBuilds.isPushTo(['master']) },
   deploy: {
-    if (runTheBuilds.isPushTo(['master'])) {
-      String versionNumber = readFile('VERSION').trim()
-      version.tag(versionNumber)
-      version.forwardMinorBranch(versionNumber)
-    }
+    String versionNumber = readFile('VERSION').trim()
+    version.tag(versionNumber)
+    version.forwardMinorBranch(versionNumber)
   },
 )
