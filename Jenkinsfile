@@ -3,7 +3,7 @@ if (env.HEAD_REF || env.BASE_REF) {
   return
 }
 
-library 'ableton-utils@0.12'
+library 'ableton-utils@0.13'
 library 'groovylint@0.4'
 
 
@@ -22,11 +22,10 @@ devToolsProject.run(
       },
     )
   },
+  deployWhen: { return runTheBuilds.isPushTo(['master']) },
   deploy: {
-    if (runTheBuilds.isPushTo(['master'])) {
-      String versionNumber = readFile('VERSION').trim()
-      version.tag(versionNumber)
-      version.forwardMinorBranch(versionNumber)
-    }
+    String versionNumber = readFile('VERSION').trim()
+    version.tag(versionNumber)
+    version.forwardMinorBranch(versionNumber)
   },
 )
