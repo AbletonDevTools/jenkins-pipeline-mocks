@@ -17,7 +17,7 @@ devToolsProject.run(
       },
     )
   },
-  deployWhen: { return runTheBuilds.isPushTo(['master']) },
+  deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: {
     String versionNumber = readFile('VERSION').trim()
     version.tag(versionNumber)
