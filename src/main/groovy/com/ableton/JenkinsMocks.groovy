@@ -45,8 +45,6 @@ class JenkinsMocks {
     }
   }
 
-  static Closure archive = { /* noop */ }
-
   static Closure deleteDir = { /* noop */ }
 
   static Closure dir = { String path, Closure body ->

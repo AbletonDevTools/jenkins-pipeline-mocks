@@ -2,6 +2,9 @@ apply plugin: 'groovy'
 
 repositories {
   mavenCentral()
+  maven {
+    url 'https://repo.jenkins-ci.org/releases/'
+  }
 }
 
 dependencies {
@@ -12,7 +15,7 @@ dependencies {
   testCompile(
     group: 'com.lesfurets',
     name: 'jenkins-pipeline-unit',
-    version: '1.0',
+    version: '1.3',
   )
 }
 
