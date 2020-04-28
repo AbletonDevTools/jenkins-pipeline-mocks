@@ -45,16 +45,6 @@ class JenkinsMocks {
     }
   }
 
-  static Closure deleteDir = { /* noop */ }
-
-  static Closure dir = { String path, Closure body ->
-    body()
-  }
-
-  static Closure echo = { String message ->
-    println message
-  }
-
   @SuppressWarnings('ThrowException')
   static Closure error = { String message ->
     throw new Exception(message)
@@ -63,8 +53,6 @@ class JenkinsMocks {
   static Closure isUnix = {
     return !System.properties['os.name'].toLowerCase().contains('windows')
   }
-
-  static Closure mail = { /* noop */ }
 
   static Closure pwd = { args = [:] ->
     return System.properties[args?.tmp ? 'java.io.tmpdir' : 'user.dir']
@@ -90,23 +78,6 @@ class JenkinsMocks {
         'did you forget to call JenkinsMocks.addReadFileMock()?')
     }
     return mockReadFileOutputs[file]
-  }
-
-  static Closure retry = { count, body ->
-    Exception lastError = null
-    while (count-- > 0) {
-      try {
-        body()
-        lastError = null
-        break
-      } catch (error) {
-        lastError = error
-      }
-    }
-
-    if (lastError) {
-      throw lastError
-    }
   }
 
   /**
@@ -231,26 +202,4 @@ class JenkinsMocks {
       throw new Exception('Script returned error code: ' + exitValue)
     }
   }
-
-  static Closure sleep = { /* noop */ }
-
-  static Closure stash = { /* noop */ }
-
-  static Closure unstash = { /* noop */ }
-
-  /**
-   * Mock for Jenkins waitUntil step. Unlike the implementation on Jenkins, this mock will
-   * abort after 100 failures, nor does it have exponential backoff between failures.
-   */
-  @SuppressWarnings('ThrowException')
-  static void waitUntil(Closure body) {
-    int count = 100
-    while (!body()) {
-      if (count-- <= 0) {
-        throw new Exception('waitUntil: failed 100 times, refusing to continue')
-      }
-    }
-  }
-
-  static Closure writeFile = { /* noop */ }
 }
