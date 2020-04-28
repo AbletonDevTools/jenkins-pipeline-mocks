@@ -74,12 +74,6 @@ class JenkinsMocksTest extends BasePipelineTest {
     JenkinsMocks.setCatchErrorParent(new Object())
   }
 
-  @Test
-  void echo() throws Exception {
-    // Just a sanity check test to make sure nothing throws
-    JenkinsMocks.echo('test')
-  }
-
   // We don't use the @Test(expected) annotation here because we want to verify the
   // contents of the exception message.
   @Test
@@ -132,55 +126,6 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test(expected = IllegalArgumentException)
   void readFileWithNoMock() throws Exception {
     JenkinsMocks.readFile('test')
-  }
-
-  @Test
-  void retry() throws Exception {
-    int bodyExecutedCount = 0
-    JenkinsMocks.retry(2) {
-      bodyExecutedCount++
-    }
-    assertEquals(1, bodyExecutedCount)
-  }
-
-  // We don't use the @Test(expected) annotation here because we want to verify the number
-  // of times the closure body executed.
-  @Test
-  @SuppressWarnings('ThrowException')
-  void retryFailOnce() throws Exception {
-    int count = 2
-    boolean exceptionThrown = false
-    int bodyExecutedCount = 0
-    JenkinsMocks.retry(2) {
-      bodyExecutedCount++
-      if (count-- == 2) {
-        exceptionThrown = true
-        throw new Exception()
-      }
-    }
-    assertTrue(exceptionThrown)
-    assertEquals(2, bodyExecutedCount)
-  }
-
-  @Test
-  @SuppressWarnings('ThrowException')
-  void retryFail() throws Exception {
-    int bodyExecutedCount = 0
-    boolean failed = false
-    int count = 2
-    try {
-      JenkinsMocks.retry(2) {
-        bodyExecutedCount++
-        count--
-        throw new Exception('test')
-      }
-    } catch (error) {
-      assertEquals('test', error.message)
-      failed = true
-    }
-    assertEquals(2, bodyExecutedCount)
-    assertEquals(0, count)
-    assertTrue(failed)
   }
 
   @Test
@@ -285,22 +230,5 @@ class JenkinsMocksTest extends BasePipelineTest {
   @Test(expected = IllegalArgumentException)
   void shWithBothStatusAndStdout() throws Exception {
     JenkinsMocks.sh(returnStatus: true, returnStdout: true, script: 'invalid')
-  }
-
-  @Test
-  void waitUntilCalledTwice() throws Exception {
-    int count = 0
-    JenkinsMocks.waitUntil {
-      count++
-      return count == 2
-    }
-    assertEquals(2, count)
-  }
-
-  @Test(expected = Exception)
-  void waitUntilExceedDefaultLimit() throws Exception {
-    JenkinsMocks.waitUntil {
-      return false
-    }
   }
 }
