@@ -109,7 +109,6 @@ class JenkinsMocks {
    * @param script Script command to mock.
    * @param stdout Standard output text to return for the given command.
    * @param exitValue Exit value for the command.
-   * @return
    */
   static void addShMock(String script, String stdout, int exitValue) {
     mockScriptOutputs[script] = new MockScriptOutput(null, stdout, exitValue)
